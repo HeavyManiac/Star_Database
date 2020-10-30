@@ -20,23 +20,24 @@ BEGIN
 	BEGIN
 		IF EXISTS (select [territory_key] from [dbo].[dim_territory] where [territory_id] = @territory_id) 
 			BEGIN 
-				/* select @date_key */   
 				UPDATE [DBO].[dim_territory]
 				SET	[name] = @territory_name,
 					[country_region_name] = @country_region,
 					[group_name] = @group_name
-				WHERE [territory_id] = @territory_id
-				SET @territory_key = 
-					(SELECT [territory_key] from [dbo].[dim_territory] where [territory_id] = @territory_id) 
+				WHERE [territory_id] = @territory_id;
 			END
 		ELSE
 			BEGIN
 				INSERT INTO [dbo].[dim_territory] 
 				([territory_id],[name] ,[country_region_name],[group_name])
-				VALUES  (@territory_id,@territory_name, @country_region, @group_name)
-				set @territory_key = 
-					(SELECT [territory_key] from [dbo].[dim_territory] where [territory_id] = @territory_id)
+				VALUES  (@territory_id,@territory_name, @country_region, @group_name);
 			END
 	END
+	
+	If (@territory_id is not null)
+	begin
+		set @territory_key = 
+			(SELECT [territory_key] from [dbo].[dim_territory] where [territory_id] = @territory_id);
+	end
 END
 

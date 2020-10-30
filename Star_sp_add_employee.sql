@@ -21,27 +21,26 @@ BEGIN
 	and (@job_title is not null) 
 	and (@employee_name is not null)  
 	Begin
-	IF EXISTS (select [employee_key] from [dbo].[dim_employee] where [employee_id] = @employee_id ) 
-		BEGIN 
-			/* select @date_key */   
-			UPDATE [DBO].[dim_employee]
-			SET	[gender] = @gender,
-				[marital_status] = @marital_status,
-				[hire_date] = @hire_date,
-				[job_title] = @job_title,
-				[employee_name] = @employee_name
-			WHERE [employee_id] = @employee_id
-			set @employee_key = (SELECT [employee_key] from [dbo].[dim_employee] where [employee_id] = @employee_id) 
+		IF EXISTS (select [employee_key] from [dbo].[dim_employee] where [employee_id] = @employee_id ) 
+			BEGIN 
+				UPDATE [DBO].[dim_employee]
+				SET	[gender] = @gender,
+					[marital_status] = @marital_status,
+					[hire_date] = @hire_date,
+					[job_title] = @job_title,
+					[employee_name] = @employee_name
+				WHERE [employee_id] = @employee_id
+			END
+		ELSE
+			BEGIN
+				INSERT INTO [dbo].[dim_employee] 
+				([employee_id], [gender],[marital_status],[hire_date],[job_title],[employee_name])
+				VALUES  (@employee_id, @gender, @marital_status, @hire_date, @job_title, @employee_name)	
+			END
 		END
-	ELSE
-		BEGIN
-			INSERT INTO [dbo].[dim_employee] 
-			([employee_id], [gender],[marital_status],[hire_date],[job_title],[employee_name])
-			VALUES  (@employee_id, @gender, @marital_status, @hire_date, @job_title, @employee_name)
+	
+		If (@employee_id is not null) 
 			set @employee_key = (SELECT [employee_key] from [dbo].[dim_employee] where [employee_id] = @employee_id)
-			/*SELECT @date_key*/ 
-		END
-	END
 END
 
 
